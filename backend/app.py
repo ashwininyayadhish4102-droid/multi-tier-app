@@ -4,7 +4,7 @@ import mysql.connector
 
 app = Flask(__name__)
 
-db = mysql.connector.connect(
+db_connection = mysql.connector.connect(
     host=os.getenv("MYSQL_HOST"),
     user=os.getenv("MYSQL_USER"),
     password=os.getenv("MYSQL_PASSWORD"),
@@ -17,7 +17,7 @@ def home():
 
 @app.route("/db")
 def db():
-    cursor = db.cursor()
+    cursor = db_connection.cursor()
     cursor.execute("SELECT NOW();")
     result = cursor.fetchone()
     return f"Database Connected Successfully! Time: {result[0]}"
