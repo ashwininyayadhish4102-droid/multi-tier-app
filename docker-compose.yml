@@ -1,0 +1,63 @@
+version: '3.8'
+
+services:
+
+  mysql-db:
+    image: mysql:8.0
+    container_name: mysql-db
+
+    restart: always
+
+    env_file:
+      - .env
+
+    environment:
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
+      MYSQL_DATABASE: ${MYSQL_DATABASE}
+      MYSQL_USER: ${MYSQL_USER}
+      MYSQL_PASSWORD: ${MYSQL_PASSWORD}
+
+    volumes:
+      - mysql-data:/var/lib/mysql
+
+    ports:
+      - "3306:3306"
+
+  backend:
+    build: ./backend
+
+    container_name: flask-backend
+
+    restart: always
+
+    env_file:
+      - .env
+
+    depends_on:
+      - mysql-db
+
+    ports:
+      - "5000:5000"
+
+    environment:
+      MYSQL_HOST: mysql-db
+      MYSQL_DATABASE: ${MYSQL_DATABASE}
+      MYSQL_USER: ${MYSQL_USER}
+      MYSQL_PASSWORD: ${MYSQL_PASSWORD}
+
+  frontend:
+    build: ./frontend
+
+    container_name: nginx-frontend
+
+    restart: always
+
+    depends_on:
+      - backend
+
+    ports:
+      - "80:80"
+
+volumes:
+
+  mysql-data:
